@@ -1,13 +1,66 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
+using System.Runtime.InteropServices;
+using BlazorTable;
+using Microsoft.EntityFrameworkCore;
+using OraEmp.Application.Services;
+using OraEmp.Infrastructure.Persistence;
+using OraEmp.Infrastructure.Services;
 using OraEmp.WebUI.Data;
+using Serilog;
+using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseSerilog(((context, loggerConfiguration) =>
+{
+    var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+    var logfile = isWindows ? @"c:\TEMP\OraEmp-.txt" : "../OraEmp-.txt";
 
-// Add services to the container.
+    var cfg = loggerConfiguration.Enrich.FromLogContext()
+        .Enrich.WithMachineName()
+        .Enrich.WithEnvironmentName()
+        .Enrich.FromLogContext()
+        .ReadFrom.Configuration(context.Configuration) // This is so it picks up the settings from appsettings.*.json
+        .WriteTo.Console(
+            outputTemplate:
+            "[{Timestamp:HH:mm:ss} ({SourceContext}) {Level:u3}] {Message:lj}{NewLine}{Exception}");
+
+    cfg.WriteTo.File(logfile,outputTemplate:"[{Timestamp:HH:mm:ss} ({SourceContext}) {Level:u3}] {Message:lj}{NewLine}{Exception}"
+            ,fileSizeLimitBytes:10000000,restrictedToMinimumLevel:LogEventLevel.Information,retainedFileCountLimit:4, rollingInterval: RollingInterval.Day);
+}));
+// Add services to the container, infrastructure
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+
+builder.Services.AddBlazorTable();
+
+// Add services to the container, Application
 builder.Services.AddSingleton<WeatherForecastService>();
+builder.Services.AddOraEmpServices();
+// builder.Services.AddScoped<IHrService, HrService>();
+
+// set up connection name
+var defaultConnectionName = builder.Configuration.GetConnectionString("Default");
+var connectionString = builder.Configuration["ConnectionStrings:" + defaultConnectionName];
+
+if (string.IsNullOrEmpty(connectionString))
+    throw new Exception(
+        $"The \"Default\" Datasource could not be found in your secrets file. Look in appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json and in %APPDATA%\\Microsoft\\UserSecrets\\");
+
+builder.Services.AddDbContextFactory<OraEmpContext>(
+    options =>
+    {
+        options.UseOracle(connectionString,
+            o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
+        options.EnableSensitiveDataLogging();
+    }, ServiceLifetime.Scoped);
+
+
+builder.Services.AddDbContext<OraEmpContext>(
+    options =>
+    {
+        options.UseOracle(connectionString,
+            o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
+        options.EnableSensitiveDataLogging();
+    });
 
 var app = builder.Build();
 
@@ -18,6 +71,12 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+app.UseSerilogRequestLogging(opts
+    => opts.EnrichDiagnosticContext = (diagnosticsContext, httpContext)=>{
+        var request = httpContext.Request;
+        diagnosticsContext.Set("Custom Header value", request.Headers["custom-header-value"]);
+    });
 
 app.UseHttpsRedirection();
 
