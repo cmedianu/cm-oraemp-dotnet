@@ -1,7 +1,37 @@
 @page "/"
 
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Serilog
+@inject ProtectedSessionStorage ProtectedSessionStore
+
+
 <PageTitle>Index</PageTitle>
 
 <h1>Human Resources</h1>
 
+<button class="btn btn-dark" type="button" @onclick="async () => { await IncrementCount();}">Increment @(currentCount)</button>
+
+@code
+{
+    private int currentCount = 0;
+    protected override async Task OnInitializedAsync()
+    {
+        ProtectedBrowserStorageResult<int> result;
+        try
+        {
+             result = await ProtectedSessionStore.GetAsync<int>("count");
+             currentCount = result.Success ? result.Value : 0;
+        }
+        catch (Exception e)
+        {
+            Log.Error(e, "CannotRestoreSession");
+        }
+    }
+
+    private async Task IncrementCount()
+    {
+        currentCount++;
+        await ProtectedSessionStore.SetAsync("count", currentCount);
+    }
+}
 

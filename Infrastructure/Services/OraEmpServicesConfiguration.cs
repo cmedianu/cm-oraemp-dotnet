@@ -4,6 +4,8 @@ using OraEmp.Application.Services;
 using OraEmp.Infrastructure.Persistence;
 using OraEmp.Infrastructure.Session;
 
+
+
 namespace OraEmp.Infrastructure.Services;
 
 public static class OraEmpServicesConfiguration

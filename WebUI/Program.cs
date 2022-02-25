@@ -1,7 +1,6 @@
 using System.Runtime.InteropServices;
 using BlazorTable;
 using Microsoft.EntityFrameworkCore;
-using OraEmp.Application.Services;
 using OraEmp.Infrastructure.Persistence;
 using OraEmp.Infrastructure.Services;
 using OraEmp.WebUI.Data;
@@ -9,7 +8,7 @@ using Serilog;
 using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Host.UseSerilog(((context, loggerConfiguration) =>
+builder.Host.UseSerilog((context, loggerConfiguration) =>
 {
     var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
     var logfile = isWindows ? @"c:\TEMP\OraEmp-.txt" : "../OraEmp-.txt";
@@ -23,9 +22,11 @@ builder.Host.UseSerilog(((context, loggerConfiguration) =>
             outputTemplate:
             "[{Timestamp:HH:mm:ss} ({SourceContext}) {Level:u3}] {Message:lj}{NewLine}{Exception}");
 
-    cfg.WriteTo.File(logfile,outputTemplate:"[{Timestamp:HH:mm:ss} ({SourceContext}) {Level:u3}] {Message:lj}{NewLine}{Exception}"
-            ,fileSizeLimitBytes:10000000,restrictedToMinimumLevel:LogEventLevel.Information,retainedFileCountLimit:4, rollingInterval: RollingInterval.Day);
-}));
+    cfg.WriteTo.File(logfile,
+        outputTemplate: "[{Timestamp:HH:mm:ss} ({SourceContext}) {Level:u3}] {Message:lj}{NewLine}{Exception}"
+        , fileSizeLimitBytes: 10000000, restrictedToMinimumLevel: LogEventLevel.Information, retainedFileCountLimit: 4,
+        rollingInterval: RollingInterval.Day);
+});
 // Add services to the container, infrastructure
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
@@ -73,7 +74,8 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseSerilogRequestLogging(opts
-    => opts.EnrichDiagnosticContext = (diagnosticsContext, httpContext)=>{
+    => opts.EnrichDiagnosticContext = (diagnosticsContext, httpContext) =>
+    {
         var request = httpContext.Request;
         diagnosticsContext.Set("Custom Header value", request.Headers["custom-header-value"]);
     });
