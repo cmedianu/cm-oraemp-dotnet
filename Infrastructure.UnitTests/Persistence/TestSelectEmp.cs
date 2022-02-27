@@ -7,9 +7,9 @@ namespace Infrastructure.UnitTests.Persistence;
 
 public class TestSelectEmp
 {
-    private OraEmpContext Context { get; }
+    private DataContext Context { get; }
 
-    public TestSelectEmp(OraEmpContext context)
+    public TestSelectEmp(DataContext context)
     {
         Context = context;
     }

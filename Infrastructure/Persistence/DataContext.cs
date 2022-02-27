@@ -3,12 +3,12 @@ using Microsoft.Extensions.Logging;
 
 namespace OraEmp.Infrastructure.Persistence;
 
-public class OraEmpContext : OraEmpContextBase
+public class DataContext : OraEmpContextBase
 {
     private readonly ILoggerFactory _loggerFactory;
     private readonly OraEmpConnectionInterceptor _interceptor;
 
-    public OraEmpContext(DbContextOptions<OraEmpContext> options, ILoggerFactory loggerFactory, OraEmpConnectionInterceptor interceptor) : base(options)
+    public DataContext(DbContextOptions<DataContext> options, ILoggerFactory loggerFactory, OraEmpConnectionInterceptor interceptor) : base(options)
     {
         _loggerFactory = loggerFactory;
         _interceptor = interceptor;

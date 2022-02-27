@@ -7,7 +7,7 @@ namespace OraEmp.Domain.Entities
     {
         public Locations()
         {
-            Departments = new HashSet<Departments>();
+            Departments = new HashSet<Department>();
         }
 
         public decimal LocationId { get; set; }
@@ -18,6 +18,6 @@ namespace OraEmp.Domain.Entities
         public string? CountryId { get; set; }
 
         public virtual Countries? Country { get; set; }
-        public virtual ICollection<Departments> Departments { get; set; }
+        public virtual ICollection<Department> Departments { get; set; }
     }
 }

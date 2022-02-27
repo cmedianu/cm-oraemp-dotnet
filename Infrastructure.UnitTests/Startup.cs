@@ -19,7 +19,7 @@ public class Startup
         var connectionString = Configuration.GetConnectionString(connectionStringName);
         //services.AddTransient<IDependency, DependencyClass>();
         services.AddSingleton<OraEmpConnectionInterceptor>();
-        services.AddDbContext<OraEmpContext>(options =>
+        services.AddDbContext<DataContext>(options =>
         {
             options.UseOracle(connectionString,
                 o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));

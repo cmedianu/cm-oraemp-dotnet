@@ -14,7 +14,7 @@ namespace OraEmp.Infrastructure.Persistence
         }
 
         public virtual DbSet<Countries> Countries { get; set; } = null!;
-        public virtual DbSet<Departments> Departments { get; set; } = null!;
+        public virtual DbSet<Department> Departments { get; set; } = null!;
         public virtual DbSet<Employees> Employees { get; set; } = null!;
         public virtual DbSet<JobHistory> JobHistory { get; set; } = null!;
         public virtual DbSet<Jobs> Jobs { get; set; } = null!;
@@ -54,7 +54,7 @@ namespace OraEmp.Infrastructure.Persistence
                     .HasConstraintName("COUNTR_REG_FK");
             });
 
-            modelBuilder.Entity<Departments>(entity =>
+            modelBuilder.Entity<Department>(entity =>
             {
                 entity.HasKey(e => e.DepartmentId)
                     .HasName("DEPT_ID_PK");

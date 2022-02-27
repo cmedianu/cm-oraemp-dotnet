@@ -1,11 +1,11 @@
-@page "/departmentlist"
+@page "/department/list"
 @using OraEmp.Domain.Entities
 @using BlazorTable
 @using global::Application.Common
 @using OraEmp.Application.Services
 @inject NavigationManager _navigation;
 @inject IJSRuntime _js
-@inject IHrService _svc
+@inject IDepartmentService _svc
 @inject ISessionService _sessionService
 
 <h3>Department List</h3>
@@ -18,15 +18,15 @@
 else
 {
     <div>Start time @(_sessionService.GetItemAsString("time"))</div>
-    <Table class="mb-3" TableItem="Departments" Items="_objectList" PageSize="50" ColumnReorder="true">
-        <Column TableItem="Departments" Title="Name&nbsp;#" Field="@(x => x.DepartmentName)" Sortable="true" Filterable="true"/>
+    <Table class="mb-3" TableItem="Department" Items="_objectList" PageSize="50" ColumnReorder="true">
+        <Column TableItem="Department" Title="Name&nbsp;#" Field="@(x => x.DepartmentName)" Sortable="true" Filterable="true"/>
         <Pager ShowPageNumber="true" ShowTotalCount="true" ShowPageSizes="true" AlwaysShow="false"/>
     </Table>
 }
 @code
 {
     private bool _dataLoading;
-    private List<Departments>? _objectList;
+    private List<Department>? _objectList;
 
     protected override async Task OnInitializedAsync()
     {
@@ -38,7 +38,7 @@ else
         {
             _dataLoading = true;
             await _sessionService.SetItemAsStringAsync("time", DateTime.Now.ToString());
-            _objectList = await _svc.GetDepartmentList();
+            _objectList = await _svc.GetAllAsync();
         }
         finally
         {

@@ -7,7 +7,7 @@ namespace OraEmp.Domain.Entities
     {
         public Employees()
         {
-            Departments = new HashSet<Departments>();
+            Departments = new HashSet<Department>();
             InverseManager = new HashSet<Employees>();
             JobHistory = new HashSet<JobHistory>();
         }
@@ -24,10 +24,10 @@ namespace OraEmp.Domain.Entities
         public decimal? ManagerId { get; set; }
         public decimal? DepartmentId { get; set; }
 
-        public virtual Departments? Department { get; set; }
+        public virtual Department? Department { get; set; }
         public virtual Jobs Job { get; set; } = null!;
         public virtual Employees? Manager { get; set; }
-        public virtual ICollection<Departments> Departments { get; set; }
+        public virtual ICollection<Department> Departments { get; set; }
         public virtual ICollection<Employees> InverseManager { get; set; }
         public virtual ICollection<JobHistory> JobHistory { get; set; }
     }

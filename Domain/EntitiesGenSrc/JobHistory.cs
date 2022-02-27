@@ -11,7 +11,7 @@ namespace OraEmp.Domain.Entities
         public string JobId { get; set; } = null!;
         public decimal? DepartmentId { get; set; }
 
-        public virtual Departments? Department { get; set; }
+        public virtual Department? Department { get; set; }
         public virtual Employees Employee { get; set; } = null!;
         public virtual Jobs Job { get; set; } = null!;
     }

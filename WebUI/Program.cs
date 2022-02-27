@@ -1,9 +1,11 @@
 using System.Runtime.InteropServices;
+using AutoMapper;
 using BlazorTable;
 using Microsoft.EntityFrameworkCore;
+using OraEmp.Application.Dto;
+using OraEmp.Application.Services;
 using OraEmp.Infrastructure.Persistence;
 using OraEmp.Infrastructure.Services;
-using OraEmp.WebUI.Data;
 using Serilog;
 using Serilog.Events;
 
@@ -34,9 +36,9 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddBlazorTable();
 
 // Add services to the container, Application
-builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddOraEmpServices();
-// builder.Services.AddScoped<IHrService, HrService>();
+
+
 
 // set up connection name
 var defaultConnectionName = builder.Configuration.GetConnectionString("Default");
@@ -46,7 +48,7 @@ if (string.IsNullOrEmpty(connectionString))
     throw new Exception(
         $"The \"Default\" Datasource could not be found in your secrets file. Look in appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json and in %APPDATA%\\Microsoft\\UserSecrets\\");
 
-builder.Services.AddDbContextFactory<OraEmpContext>(
+builder.Services.AddDbContextFactory<DataContext>(
     options =>
     {
         options.UseOracle(connectionString,
@@ -55,13 +57,22 @@ builder.Services.AddDbContextFactory<OraEmpContext>(
     }, ServiceLifetime.Scoped);
 
 
-builder.Services.AddDbContext<OraEmpContext>(
+builder.Services.AddDbContext<DataContext>(
     options =>
     {
         options.UseOracle(connectionString,
             o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
         options.EnableSensitiveDataLogging();
     });
+
+MapperConfiguration mapperConfig = new(cfg => {
+    cfg.AddProfile<WebFormToDomainMappingProfile>();
+});
+
+IMapper mapper = mapperConfig.CreateMapper();
+builder.Services.AddSingleton(mapper);
+builder.Services.AddSingleton(mapperConfig);
+
 
 var app = builder.Build();
 

@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using Application.Common;
 
-namespace OraEmp.Infrastructure.Session;
+namespace OraEmp.Application.Session;
 
 public class SimpleMemorySessionImpl : ISessionService
 {

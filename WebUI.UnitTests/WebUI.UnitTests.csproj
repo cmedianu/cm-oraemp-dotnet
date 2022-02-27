@@ -4,15 +4,10 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <RootNamespace>OraEmp.Domain</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Dto" />
-      <Folder Include="Entities" />
-      <Folder Include="EntitiesGenSrc" />
-      <Folder Include="Enums" />
-      <Folder Include="ValueObjects" />
+      <PackageReference Include="Blazored.SessionStorage.TestExtensions" Version="2.2.0" />
     </ItemGroup>
 
 </Project>

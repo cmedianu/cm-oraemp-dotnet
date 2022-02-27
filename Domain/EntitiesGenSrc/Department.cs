@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace OraEmp.Domain.Entities
 {
-    public partial class Departments
+    public partial class Department
     {
-        public Departments()
+        public Department()
         {
             Employees = new HashSet<Employees>();
             JobHistory = new HashSet<JobHistory>();

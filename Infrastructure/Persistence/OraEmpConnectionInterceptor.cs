@@ -10,7 +10,7 @@ public class OraEmpConnectionInterceptor :DbConnectionInterceptor
 
     public OraEmpConnectionInterceptor(ILoggerFactory loggerFactory)
     {
-        _logger = loggerFactory.CreateLogger(this.GetType().FullName);
+        _logger = loggerFactory.CreateLogger(GetType().FullName!);
     }
 
     public override Task ConnectionOpenedAsync(DbConnection connection, ConnectionEndEventData eventData,

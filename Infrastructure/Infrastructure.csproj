@@ -8,17 +8,21 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Application\Application.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
       <Folder Include="Files" />
       <Folder Include="Identity" />
       <Folder Include="PersistenceGenSrc" />
+      <Folder Include="Services" />
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Blazored.SessionStorage" Version="2.2.0" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
       <PackageReference Include="Oracle.EntityFrameworkCore" Version="6.21.5" />
+      <PackageReference Include="Serilog" Version="2.10.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Domain\Domain.csproj" />
     </ItemGroup>
 
 </Project>

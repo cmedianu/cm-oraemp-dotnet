@@ -1,0 +1,152 @@
+@page "/department/edit/{Id:long}"
+@page "/department/edit"
+@using AutoMapper
+@using Hides.WebUI.Util
+@using Microsoft.AspNetCore.Components
+@using OraEmp.Application.Dto
+@using OraEmp.Application.Services
+@using OraEmp.Domain.Entities
+@using OraEmp.Domain.Exceptions
+@using OraEmp.Infrastructure.Services
+@inject IDepartmentService _departmentService;
+
+@inherits BaseBlazorPage
+
+@inject NavigationManager _navigation;
+@inject IMapper _mapper;
+@inject IJSRuntime _js
+
+@inject DepartmentService _mainObjService;
+
+<div id="alert_placeholder" class=""></div>
+
+@if (_dataLoading)
+{
+    <p>
+        <em>Loading...</em>
+    </p>
+}
+else
+{
+    <div class="breadcrumb">
+        <ul>
+            <li><a href="">Home</a></li>
+            <li><a href="@INav.DepartmentList()">Client Systems</a></li>
+            <li>@(_editForm.DepartmentName ?? "New")</li>
+        </ul>
+    </div>
+    <h1>@(_editForm.DepartmentName ?? "New Department")</h1>
+    <EditForm Model="@_editForm" class="w-75" OnValidSubmit="SaveObj">
+        <DataAnnotationsValidator/>
+        <ValidationSummary/>
+
+        <div class="form-group">
+            <div class="form-group">
+                <label for="Name">Name</label>
+                <InputText disabled="@(!CanEdit)" id="Name" class="form-control" @bind-Value="_editForm.DepartmentName" DisplayName="Client System Name"/>
+                <ValidationMessage For="@(() => _editForm.DepartmentName)"/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <button hidden="@(!CanEdit)" class="btn btn-outline-secondary" type="button" @onclick="ResetForm">Reset</button>
+            </div>
+            @if (CanEdit)
+            {
+                <div class="col text-right">
+                    <button class="btn btn-danger" hidden="@(!CanDelete || _editForm.DepartmentId == 0)" type="button" @onclick="() => { DoDelete(); }">Delete</button>
+                    <button class="btn btn-primary" type="submit">Save</button>
+                </div>
+            }
+        </div>
+    </EditForm>
+}
+
+
+@code {
+
+    [Parameter]
+    public long Id { get; set; }
+
+    private bool _dataLoading;
+    private DepartmentForm _editForm = null!;
+    private ValidationMessageStore _messageStore = null!;
+    private EditContext _editContext = null!;
+    private Department _dbObj = null!;
+
+    private async Task SaveObj()
+    {
+        if (! CanEdit)
+        {
+            throw new PermissionDeniedException("Save");
+        }
+        _dbObj = _mapper.Map(_editForm, _dbObj);
+        await _departmentService.UpdateAsync(_dbObj);
+        NavigateBack();
+    }
+
+    private void NavigateBack()
+    {
+        _navigation.NavigateTo(INav.DepartmentList());
+    }
+
+    private bool CanEdit { get; set; } = true;
+
+    private void ResetForm()
+    {
+        _editForm = _mapper.Map(_dbObj ,_editForm);
+        _messageStore.Clear();
+        _editContext = new EditContext(_editForm); // ??
+        _editContext.NotifyValidationStateChanged();
+    }
+
+    public bool CanDelete { get; set; } = true;
+
+    private void DoDelete()
+    {
+        throw new NotImplementedException();
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        if (_dataLoading)
+        {
+            return;
+        }
+        try
+        {
+            _dataLoading = true;
+            if (Id > 0)
+            {
+                _dbObj = await _departmentService.GetByIdAsync(Id);
+            }
+            else
+            {
+                _dbObj = new();
+            }
+            _editForm ??= new();
+            _editForm = _mapper.Map(_dbObj, _editForm);
+            _editContext = new(_editForm);
+
+            _messageStore = new(_editContext);
+            _editContext.OnValidationRequested += HandleValidationRequested!;
+        }
+        catch (Exception ex)
+        {
+            HandleException(ex,_navigation);
+        }
+        finally
+        {
+            _dataLoading = false;
+        }
+    }
+
+    private void HandleValidationRequested(object sender,
+        ValidationRequestedEventArgs args)
+    {
+        _messageStore.Clear();
+        if (false)
+        {
+            _messageStore.Add(() => _editForm.DepartmentName, "DepartmentName is not nice");
+        }
+    }
+}
