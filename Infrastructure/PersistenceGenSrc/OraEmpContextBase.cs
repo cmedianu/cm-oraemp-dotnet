@@ -21,6 +21,8 @@ namespace OraEmp.Infrastructure.Persistence
         public virtual DbSet<Locations> Locations { get; set; } = null!;
         public virtual DbSet<Regions> Regions { get; set; } = null!;
 
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema("HR")
@@ -329,6 +331,11 @@ namespace OraEmp.Infrastructure.Persistence
             modelBuilder.HasSequence("LOCATIONS_SEQ").IncrementsBy(100);
 
             OnModelCreatingPartial(modelBuilder);
+        }
+
+        public override int SaveChanges()
+        {
+            return base.SaveChanges();
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

@@ -1,6 +1,8 @@
 using System.Runtime.InteropServices;
 using AutoMapper;
+using Blazored.SessionStorage;
 using BlazorTable;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using OraEmp.Application.Dto;
 using OraEmp.Application.Services;
@@ -37,8 +39,12 @@ builder.Services.AddBlazorTable();
 
 // Add services to the container, Application
 builder.Services.AddOraEmpServices();
+builder.Services.AddBlazoredSessionStorage(config =>
+    config.JsonSerializerOptions.WriteIndented = true
+);
 
-
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(@"C:\\TEMP\\dataprotection\\"));
 
 // set up connection name
 var defaultConnectionName = builder.Configuration.GetConnectionString("Default");

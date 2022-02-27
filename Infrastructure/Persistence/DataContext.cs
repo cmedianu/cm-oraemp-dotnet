@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace OraEmp.Infrastructure.Persistence;
 
-public class DataContext : OraEmpContextBase
+public class DataContext : OraEmpContextBase, IDataContext
 {
     private readonly ILoggerFactory _loggerFactory;
     private readonly OraEmpConnectionInterceptor _interceptor;
@@ -20,4 +20,6 @@ public class DataContext : OraEmpContextBase
         optionsBuilder.UseLoggerFactory(_loggerFactory);
         optionsBuilder.AddInterceptors(_interceptor);
     }
+
+    public DbContext Instance => this;
 }

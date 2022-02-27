@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using OraEmp.Application.Services;
 using OraEmp.Infrastructure.Persistence;
 
 namespace Infrastructure.UnitTests;
@@ -19,6 +20,16 @@ public class Startup
         var connectionString = Configuration.GetConnectionString(connectionStringName);
         //services.AddTransient<IDependency, DependencyClass>();
         services.AddSingleton<OraEmpConnectionInterceptor>();
+        services.AddOraEmpServices();
+
+        services.AddDbContextFactory<DataContext>(
+            options =>
+            {
+                options.UseOracle(connectionString,
+                    o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
+                options.EnableSensitiveDataLogging();
+            }, ServiceLifetime.Scoped);
+
         services.AddDbContext<DataContext>(options =>
         {
             options.UseOracle(connectionString,

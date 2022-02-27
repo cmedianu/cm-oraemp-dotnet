@@ -10,8 +10,6 @@ public interface ISessionService
         string key,
         CancellationToken? cancellationToken = null);
 
-    string GetItemAsString(
-        string key);
 
    // ValueTask<string> KeyAsync(int index, CancellationToken? cancellationToken = null);
 

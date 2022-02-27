@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using OraEmp.Infrastructure.Persistence;
 using Microsoft.Extensions.Configuration;
 using OraEmp.Domain.Entities;
@@ -9,9 +10,9 @@ public class TestSelectEmp
 {
     private DataContext Context { get; }
 
-    public TestSelectEmp(DataContext context)
+    public TestSelectEmp(DataContext contextFactory)
     {
-        Context = context;
+        
     }
 
     [Fact]

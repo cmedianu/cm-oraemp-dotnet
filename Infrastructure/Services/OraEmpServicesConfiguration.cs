@@ -12,7 +12,8 @@ namespace OraEmp.Application.Services
         {
             services.AddScoped<IDepartmentService, DepartmentService>();
             services.AddScoped<OraEmpConnectionInterceptor>();
-            services.AddScoped<ISessionService,SimpleMemorySessionImpl>();
+            // services.AddScoped<ISessionService,SimpleMemorySessionImpl>();
+            services.AddScoped<ISessionService,TabStorageSessionImpl>();
         }
     }
 }

@@ -10,8 +10,6 @@
     <ItemGroup>
       <Folder Include="Files" />
       <Folder Include="Identity" />
-      <Folder Include="PersistenceGenSrc" />
-      <Folder Include="Services" />
     </ItemGroup>
 
     <ItemGroup>
@@ -22,6 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Application\Application.csproj" />
       <ProjectReference Include="..\Domain\Domain.csproj" />
     </ItemGroup>
 

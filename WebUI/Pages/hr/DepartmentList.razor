@@ -17,7 +17,7 @@
 }
 else
 {
-    <div>Start time @(_sessionService.GetItemAsString("time"))</div>
+    <div>Start time @(_sessionService.GetItemAsStringAsync("time"))</div>
     <Table class="mb-3" TableItem="Department" Items="_objectList" PageSize="50" ColumnReorder="true">
         <Column TableItem="Department" Title="Name&nbsp;#" Field="@(x => x.DepartmentName)" Sortable="true" Filterable="true"/>
         <Pager ShowPageNumber="true" ShowTotalCount="true" ShowPageSizes="true" AlwaysShow="false"/>
