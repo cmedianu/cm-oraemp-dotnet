@@ -78,7 +78,9 @@ MapperConfiguration mapperConfig = new(cfg => {
 IMapper mapper = mapperConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
 builder.Services.AddSingleton(mapperConfig);
+builder.Services.AddScoped<IdentityInformation>();
 
+/// END SERVICES
 
 var app = builder.Build();
 
