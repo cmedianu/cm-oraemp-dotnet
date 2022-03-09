@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Components.Authorization;
 using OraEmp.Application.Services;
@@ -28,10 +29,12 @@ public class EmpAuthenticationStateProvider : AuthenticationStateProvider
         string? authentication;
         if (Authenticated)
         {
-            authentication = "HARDCODED";
-            claims.Add(new Claim(ClaimTypes.NameIdentifier, "cmedianu"));
-            claims.Add(new Claim(ClaimTypes.Name, "Calin Medianu"));
-            claims.Add(new Claim(ClaimTypes.Role, "USER"));
+            authentication = "TEST";
+            claims.Add(new Claim(ClaimTypes.NameIdentifier, _identity.State.LoggedInUser));
+            foreach (var role in _identity.State.Roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
             identity = new ClaimsIdentity(claims, authentication);
         }
         else
@@ -46,4 +49,17 @@ public class EmpAuthenticationStateProvider : AuthenticationStateProvider
         var user = new ClaimsPrincipal(identity);
         return user;
     }
+
+    public async Task<bool> Login(string loginUser)
+    {
+        Authenticated = true;
+        Hashtable roles = new();
+        roles.Add("calin",new [] {"USER","ADMIN"});
+        roles.Add("admin", new[] {"ADMIN"});
+        roles.Add("user", new[] {"USER"});
+        _identity.State.setLoggedInUser(loginUser, (string[]) roles[loginUser]!);
+        // NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+        return true;
+    }
+
 }
