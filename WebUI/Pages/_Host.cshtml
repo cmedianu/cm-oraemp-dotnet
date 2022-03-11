@@ -6,7 +6,6 @@
 @* This code gets executed only when we have a request, so we can capctreu the http context here *@
 @{
     Layout = "_Layout";
-    //state.isAuthenticated = HttpContext.User.Identity.IsAuthenticated;
     var state = new InitialApplicationState();
     state.Username = HttpContext.User.Identity.Name;
     state.RemoteIpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
@@ -17,12 +16,10 @@
     state.Test = ret.ToString();
 }
 
+<component type="typeof(App)" param-InitialState="state" render-mode="ServerPrerendered"/>
+
 @*
-<component type="typeof(App)" render-mode="ServerPrerendered"/>
-*@
-
-
-
+Needed for SessionStorage
 <component type="typeof(App)" param-InitialState="state" render-mode="Server"/>
-
+*@
 

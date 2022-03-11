@@ -1,3 +1,5 @@
+@attribute [Authorize]
+
 @page "/department/list"
 @using OraEmp.Domain.Entities
 @using BlazorTable
@@ -6,7 +8,6 @@
 @inject NavigationManager _navigation;
 @inject IJSRuntime _js
 @inject IDepartmentService _svc
-@inject ISessionService _sessionService
 
 <h3>Department List</h3>
 @if (_objectList == null)
@@ -17,7 +18,6 @@
 }
 else
 {
-    <div>Start time @(_sessionService.GetItemAsStringAsync("time"))</div>
     <Table class="mb-3" TableItem="Department" Items="_objectList" PageSize="50" ColumnReorder="true">
         <Column TableItem="Department" Title="Name&nbsp;#" Field="@(x => x.DepartmentName)" Sortable="true" Filterable="true"/>
         <Pager ShowPageNumber="true" ShowTotalCount="true" ShowPageSizes="true" AlwaysShow="false"/>
@@ -37,7 +37,6 @@ else
         try
         {
             _dataLoading = true;
-            await _sessionService.SetItemAsStringAsync("time", DateTime.Now.ToString());
             _objectList = await _svc.GetAllAsync();
         }
         finally

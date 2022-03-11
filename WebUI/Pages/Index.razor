@@ -1,40 +1,48 @@
 @page "/"
 @inject IdentityInformation _identity;
-@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
-@using OraEmp.Application.Services
-@using Serilog
+@* @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @inject ProtectedSessionStorage ProtectedSessionStore
+*@
+@using OraEmp.Application.Services
 
-
-<PageTitle>Index</PageTitle>
+<PageTitle>Human Resources</PageTitle>
 
 <h1>Human Resources</h1>
-<br> @_identity.state.ToString()
-
+<br/> Identity: @_identity.State.ToString()
+<AuthorizeView>
+    <div>IsAuthenticated : @context.User.Identity.IsAuthenticated</div>
+    @foreach (var claim in context.User.Claims)
+    {
+        <div>@claim.Type : @claim.Value</div>
+    }
+</AuthorizeView>
 
 <button class="btn btn-dark" type="button" @onclick="async () => { await IncrementCount();}">Increment @(currentCount)</button>
 
 @code
 {
     private int currentCount = 0;
-    protected override async Task OnInitializedAsync()
-    {
-        ProtectedBrowserStorageResult<int> result;
-        try
-        {
-             result = await ProtectedSessionStore.GetAsync<int>("count");
-             currentCount = result.Success ? result.Value : 0;
-        }
-        catch (Exception e)
-        {
-            Log.Error(e, "CannotRestoreSession");
-        }
-    }
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthenticationStateTask { get; set; }
 
     private async Task IncrementCount()
     {
         currentCount++;
-        await ProtectedSessionStore.SetAsync("count", currentCount);
+        //await ProtectedSessionStore.SetAsync("count", currentCount);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        /*ProtectedBrowserStorageResult<int> result;
+        try
+        {
+            result = await ProtectedSessionStore.GetAsync<int>("count");
+            currentCount = result.Success ? result.Value : 0;
+        }
+        catch (Exception e)
+        {
+            Log.Error(e, "CannotRestoreSession");
+        }*/
     }
 }
 

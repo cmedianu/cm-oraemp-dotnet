@@ -1,13 +1,14 @@
 using System.Runtime.InteropServices;
 using AutoMapper;
-using Blazored.SessionStorage;
 using BlazorTable;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using OraEmp.Application.Dto;
 using OraEmp.Application.Services;
 using OraEmp.Infrastructure.Persistence;
-using OraEmp.Infrastructure.Services;
 using Serilog;
 using Serilog.Events;
 
@@ -39,9 +40,6 @@ builder.Services.AddBlazorTable();
 
 // Add services to the container, Application
 builder.Services.AddOraEmpServices();
-builder.Services.AddBlazoredSessionStorage(config =>
-    config.JsonSerializerOptions.WriteIndented = true
-);
 
 builder.Services.AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo(@"C:\\TEMP\\dataprotection\\"));
@@ -53,6 +51,17 @@ var connectionString = builder.Configuration["ConnectionStrings:" + defaultConne
 if (string.IsNullOrEmpty(connectionString))
     throw new Exception(
         $"The \"Default\" Datasource could not be found in your secrets file. Look in appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json and in %APPDATA%\\Microsoft\\UserSecrets\\");
+
+builder.Services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
+
+builder.Services.AddAuthorization(options =>
+    {
+        options.AddPolicy("CoolCitiesOnly", policy => policy.RequireClaim("city", "Brasov"));
+        options.AddPolicy("ManagerOnly", policy => policy.RequireRole("SUPERMANAGER", "MANAGER"));
+    }
+);
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
 
 builder.Services.AddDbContextFactory<DataContext>(
     options =>
@@ -71,9 +80,7 @@ builder.Services.AddDbContext<DataContext>(
         options.EnableSensitiveDataLogging();
     });
 
-MapperConfiguration mapperConfig = new(cfg => {
-    cfg.AddProfile<WebFormToDomainMappingProfile>();
-});
+MapperConfiguration mapperConfig = new(cfg => { cfg.AddProfile<WebFormToDomainMappingProfile>(); });
 
 IMapper mapper = mapperConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
@@ -98,6 +105,11 @@ app.UseSerilogRequestLogging(opts
         var request = httpContext.Request;
         diagnosticsContext.Set("Custom Header value", request.Headers["custom-header-value"]);
     });
+
+// Auth - is this needed??
+ app.UseAuthentication();
+ app.UseAuthorization();
+// End Auth
 
 app.UseHttpsRedirection();
 

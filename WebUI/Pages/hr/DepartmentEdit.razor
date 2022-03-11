@@ -8,6 +8,7 @@
 @using OraEmp.Domain.Entities
 @using OraEmp.Domain.Exceptions
 @using OraEmp.Infrastructure.Services
+@using OraEmp.WebUI.Util
 @inject IDepartmentService _departmentService;
 
 @inherits BaseBlazorPage
@@ -43,21 +44,18 @@ else
         <div class="form-group">
             <div class="form-group">
                 <label for="Name">Name</label>
-                <InputText disabled="@(!CanEdit)" id="Name" class="form-control" @bind-Value="_editForm.DepartmentName" DisplayName="Client System Name"/>
+                <InputText id="Name" class="form-control" @bind-Value="_editForm.DepartmentName" DisplayName="Client System Name"/>
                 <ValidationMessage For="@(() => _editForm.DepartmentName)"/>
             </div>
         </div>
         <div class="row">
             <div class="col">
-                <button hidden="@(!CanEdit)" class="btn btn-outline-secondary" type="button" @onclick="ResetForm">Reset</button>
+                <button  class="btn btn-outline-secondary" type="button" @onclick="ResetForm">Reset</button>
             </div>
-            @if (CanEdit)
-            {
-                <div class="col text-right">
-                    <button class="btn btn-danger" hidden="@(!CanDelete || _editForm.DepartmentId == 0)" type="button" @onclick="() => { DoDelete(); }">Delete</button>
-                    <button class="btn btn-primary" type="submit">Save</button>
-                </div>
-            }
+           <div class="col text-right">
+                               <button class="btn btn-danger" hidden="@(_editForm.DepartmentId == 0)" type="button" @onclick="() => { DoDelete(); }">Delete</button>
+                               <button class="btn btn-primary" type="submit">Save</button>
+                           </div>
         </div>
     </EditForm>
 }
@@ -76,10 +74,6 @@ else
 
     private async Task SaveObj()
     {
-        if (! CanEdit)
-        {
-            throw new PermissionDeniedException("Save");
-        }
         _dbObj = _mapper.Map(_editForm, _dbObj);
         await _departmentService.UpdateAsync(_dbObj);
         NavigateBack();
@@ -89,8 +83,6 @@ else
     {
         _navigation.NavigateTo(INav.DepartmentList());
     }
-
-    private bool CanEdit { get; set; } = true;
 
     private void ResetForm()
     {

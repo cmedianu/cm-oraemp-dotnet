@@ -1,6 +1,5 @@
 ﻿using Application.Common;
 using Microsoft.Extensions.DependencyInjection;
-using OraEmp.Application.Session;
 using OraEmp.Infrastructure.Persistence;
 using OraEmp.Infrastructure.Services;
 
@@ -13,7 +12,7 @@ namespace OraEmp.Application.Services
             services.AddScoped<IDepartmentService, DepartmentService>();
             services.AddScoped<OraEmpConnectionInterceptor>();
             // services.AddScoped<ISessionService,SimpleMemorySessionImpl>();
-            services.AddScoped<ISessionService,TabStorageSessionImpl>();
+            //services.AddScoped<ISessionService,TabStorageSessionImpl>();
         }
     }
 }

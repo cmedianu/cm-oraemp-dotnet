@@ -1,5 +1,6 @@
 ﻿@using OraEmp.Application.Services
 @using OraEmp.Application.Common
+
 @using Serilog
 @inject IdentityInformation _identity;
 <CascadingAuthenticationState>
@@ -8,10 +9,7 @@
             <AuthorizeRouteView RouteData="@routeData"
                                 DefaultLayout="@typeof(MainLayout)">
                 <NotAuthorized>
-                    <!--
-                    <RedirectToLogin/>
-                    -->
-                    Not authorized
+                    Not authorized from App.razor - should not see this
                 </NotAuthorized>
                 <Authorizing>
                     <h1>Authorization in progress</h1>
@@ -34,7 +32,7 @@
 
     protected override void OnInitialized()
     {
-        Log.Information("Initializing state: {@InitialState}",InitialState.ToString());
         _identity.setState(InitialState);
+        Log.Information("Initializing state: {@InitialState}",InitialState?.ToString());
     }
 }

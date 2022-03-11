@@ -1,4 +1,4 @@
-﻿namespace Hides.WebUI.Util
+﻿namespace OraEmp.WebUI.Util
 {
     // ReSharper disable once InconsistentNaming
     public static class INav

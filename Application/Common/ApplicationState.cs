@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace OraEmp.Application.Common;
 
 public class ApplicationState
@@ -8,11 +10,20 @@ public class ApplicationState
         RemoteIpAddress = init.RemoteIpAddress;
     }
 
-    public string Username { get;  }
-    public string RemoteIpAddress { get;  }
+    public string Username { get; }
+    public string RemoteIpAddress { get; }
+
+    public string LoggedInUser { get; private set; }
+
 
     public override string ToString()
     {
-        return Username + "@" + RemoteIpAddress;
+        StringBuilder bld = new(Username + "@" + RemoteIpAddress);
+        return bld.ToString();
+    }
+
+    public void setLoggedInUser(string modelLoginUser)
+    {
+        LoggedInUser = modelLoginUser;
     }
 }
