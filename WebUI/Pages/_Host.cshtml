@@ -6,12 +6,14 @@
 @* This code gets executed only when we have a request, so we can capctreu the http context here *@
 @{
     Layout = "_Layout";
-    var state = new InitialApplicationState();
-    state.Username = HttpContext.User.Identity.Name;
-    state.RemoteIpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
-    state.LocalPort = HttpContext.Connection.LocalPort.ToString();
-    state.RemotePort = HttpContext.Connection.RemotePort.ToString();
-    state.UserAgent = HttpContext.Request.Headers.UserAgent.ToString();
+    var state = new InitialApplicationState
+    {
+        Username = HttpContext.User.Identity.Name,
+        RemoteIpAddress = HttpContext.Connection.RemoteIpAddress.ToString(),
+        LocalPort = HttpContext.Connection.LocalPort.ToString(),
+        RemotePort = HttpContext.Connection.RemotePort.ToString(),
+        UserAgent = HttpContext.Request.Headers.UserAgent.ToString()
+    };
     HttpContext.Request.Headers.TryGetValue("UserAgent", out var ret);
     state.Test = ret.ToString();
 }

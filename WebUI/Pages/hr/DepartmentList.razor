@@ -5,6 +5,7 @@
 @using BlazorTable
 @using global::Application.Common
 @using OraEmp.Application.Services
+@using OraEmp.WebUI.Util
 @inject NavigationManager _navigation;
 @inject IJSRuntime _js
 @inject IDepartmentService _svc
@@ -19,10 +20,15 @@
 else
 {
     <Table class="mb-3" TableItem="Department" Items="_objectList" PageSize="50" ColumnReorder="true">
-        <Column TableItem="Department" Title="Name&nbsp;#" Field="@(x => x.DepartmentName)" Sortable="true" Filterable="true"/>
+        <Column TableItem="Department" Title="Name&nbsp;#" Field="@(x => x.DepartmentName)" Sortable="true" Filterable="true">
+            <Template>
+                <button class="btn btn-link" @onclick="() => GoDepartment(context)">@context.DepartmentName</button>
+            </Template>
+        </Column>
         <Pager ShowPageNumber="true" ShowTotalCount="true" ShowPageSizes="true" AlwaysShow="false"/>
     </Table>
 }
+
 @code
 {
     private bool _dataLoading;
@@ -43,5 +49,10 @@ else
         {
             _dataLoading = false;
         }
+    }
+
+    private void GoDepartment(Department context)
+    {
+        _navigation.NavigateTo(INav.DepartmentEdit(context.DepartmentId.ToString()));
     }
 }
