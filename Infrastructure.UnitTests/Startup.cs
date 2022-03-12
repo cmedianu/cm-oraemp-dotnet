@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Oracle.ManagedDataAccess.Client;
 using OraEmp.Application.Services;
 using OraEmp.Infrastructure.Persistence;
 
@@ -36,5 +37,16 @@ public class Startup
                 o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
             options.EnableSensitiveDataLogging();
         });
+        // OracleConfiguration.OracleDataSources.Add(connectionStringName, connectionString);
+
+        services.AddScoped<IDbSessionManagement>(s => new DbSessionManagement(connectionString));
+        OracleConfiguration.BindByName = true;
+
+        // Set tracing options
+        OracleConfiguration.TraceOption = 1;
+        OracleConfiguration.TraceFileLocation = @"c:\TEMP";
+        // Uncomment below to generate trace files
+        //OracleConfiguration.TraceLevel = 7;
+
     }
 }

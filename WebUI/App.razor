@@ -2,7 +2,7 @@
 @using OraEmp.Application.Common
 
 @using Serilog
-@inject IdentityInformation _identity;
+@inject AppStateInfo _identity;
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(Program).Assembly">
         <Found Context="routeData">

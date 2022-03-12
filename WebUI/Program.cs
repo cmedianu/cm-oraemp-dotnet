@@ -47,13 +47,14 @@ builder.Services.AddOraEmpServices();
 builder.Services.AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo(@"C:\\TEMP\\dataprotection\\"));
 
-// set up connection name
+// set up connectionString
 var defaultConnectionName = builder.Configuration.GetConnectionString("Default");
 var connectionString = builder.Configuration["ConnectionStrings:" + defaultConnectionName];
-
 if (string.IsNullOrEmpty(connectionString))
     throw new Exception(
         $"The \"Default\" Datasource could not be found in your secrets file. Look in appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json and in %APPDATA%\\Microsoft\\UserSecrets\\");
+
+builder.Services.AddScoped<IDbSessionManagement>(s => new DbSessionManagement(connectionString));
 
 builder.Services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
 
@@ -94,11 +95,12 @@ IMapper mapper = mapperConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
 builder.Services.AddSingleton(mapperConfig);
 
-builder.Services.AddScoped<IdentityInformation>();
+builder.Services.AddScoped<AppStateInfo>();
 
 /// END SERVICES
 
 var app = builder.Build();
+// app.UsePathBase("/empdept");
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

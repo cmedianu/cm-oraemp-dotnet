@@ -10,10 +10,8 @@ public class ApplicationState
         RemoteIpAddress = init.RemoteIpAddress;
     }
 
-    private string Username { get; }
-    private string RemoteIpAddress { get; }
-
-    private string? LoggedInUser { get; set; }
+    public string Username { get; }
+    public string RemoteIpAddress { get; }
 
 
     public override string ToString()
@@ -22,8 +20,4 @@ public class ApplicationState
         return bld.ToString();
     }
 
-    public void SetLoggedInUser(string modelLoginUser)
-    {
-        LoggedInUser = modelLoginUser;
-    }
 }
