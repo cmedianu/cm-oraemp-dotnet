@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 public abstract class BaseService<TEntity> : IBaseService<TEntity> where TEntity : class
 {
-    public readonly IDataContext _context;
+    protected readonly IDataContext _context;
 
     public BaseService(IDbContextFactory<DataContext> ctx)
     {
@@ -28,7 +28,7 @@ public abstract class BaseService<TEntity> : IBaseService<TEntity> where TEntity
     // public abstract Task<TEntity> GetByIdAsync(decimal id);
     public async Task<TEntity> GetByIdAsync(decimal id, bool track = true)
     {
-        TEntity ret = await _context.Instance.FindAsync<TEntity>(id);
+        TEntity ret = await _context.Instance.FindAsync<TEntity>(id) ?? throw new InvalidOperationException("Could not find object by ID");
         if (!track)
         {
             _context.Instance.Entry(ret).State = EntityState.Detached;

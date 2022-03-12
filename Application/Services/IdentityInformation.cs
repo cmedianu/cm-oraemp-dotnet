@@ -7,9 +7,13 @@ public class IdentityInformation
 {
     public ApplicationState? State { get; private set; }
 
-    public void setState(InitialApplicationState initial)
+    public void SetState(InitialApplicationState initial)
     {
         Log.Information("Setting state to {}" , initial);
+        if (State is not null)
+        {
+            throw new Exception("State already set: Should not happen");
+        }
         State = new ApplicationState(initial);
     }
 }

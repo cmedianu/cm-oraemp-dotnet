@@ -1,6 +1,9 @@
+using System.Reflection;
 using System.Runtime.InteropServices;
 using AutoMapper;
 using BlazorTable;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
@@ -34,7 +37,7 @@ builder.Host.UseSerilog((context, loggerConfiguration) =>
 });
 // Add services to the container, infrastructure
 builder.Services.AddRazorPages();
-builder.Services.AddServerSideBlazor();
+builder.Services.AddServerSideBlazor(c => c.DetailedErrors = true);
 
 builder.Services.AddBlazorTable();
 
@@ -80,11 +83,17 @@ builder.Services.AddDbContext<DataContext>(
         options.EnableSensitiveDataLogging();
     });
 
-MapperConfiguration mapperConfig = new(cfg => { cfg.AddProfile<WebFormToDomainMappingProfile>(); });
+//builder.Services.AddTransient<IValidator<DepartmentForm>, DepartmentValidator>();
 
+// This is the assembly containing the validation.
+// As an alternative, remove DisableAssemblyScanning="@true" from the form, or add using DI
+builder.Services.AddControllers().AddFluentValidation(fv => fv.RegisterValidatorsFromAssembly(Assembly.Load("Application")));
+
+MapperConfiguration mapperConfig = new(cfg => { cfg.AddProfile<WebFormToDomainMappingProfile>(); });
 IMapper mapper = mapperConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
 builder.Services.AddSingleton(mapperConfig);
+
 builder.Services.AddScoped<IdentityInformation>();
 
 /// END SERVICES
@@ -106,10 +115,10 @@ app.UseSerilogRequestLogging(opts
         diagnosticsContext.Set("Custom Header value", request.Headers["custom-header-value"]);
     });
 
-// Auth - is this needed??
- app.UseAuthentication();
- app.UseAuthorization();
-// End Auth
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 
 app.UseHttpsRedirection();
 

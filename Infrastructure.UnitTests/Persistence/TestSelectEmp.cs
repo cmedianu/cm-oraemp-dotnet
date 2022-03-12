@@ -10,9 +10,9 @@ public class TestSelectEmp
 {
     private DataContext Context { get; }
 
-    public TestSelectEmp(DataContext contextFactory)
+    public TestSelectEmp(DataContext context)
     {
-        
+        Context = context;
     }
 
     [Fact]

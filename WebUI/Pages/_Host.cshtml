@@ -7,15 +7,14 @@
 @{
     Layout = "_Layout";
     var state = new InitialApplicationState
-    {
-        Username = HttpContext.User.Identity.Name,
-        RemoteIpAddress = HttpContext.Connection.RemoteIpAddress.ToString(),
-        LocalPort = HttpContext.Connection.LocalPort.ToString(),
-        RemotePort = HttpContext.Connection.RemotePort.ToString(),
-        UserAgent = HttpContext.Request.Headers.UserAgent.ToString()
-    };
+        (
+        username: HttpContext.User.Identity.Name,
+        remoteIpAddress: HttpContext.Connection.RemoteIpAddress.ToString(),
+        localPort: HttpContext.Connection.LocalPort.ToString(),
+        remotePort: HttpContext.Connection.RemotePort.ToString(),
+        userAgent: HttpContext.Request.Headers.UserAgent.ToString()
+        );
     HttpContext.Request.Headers.TryGetValue("UserAgent", out var ret);
-    state.Test = ret.ToString();
 }
 
 <component type="typeof(App)" param-InitialState="state" render-mode="ServerPrerendered"/>
@@ -24,4 +23,3 @@
 Needed for SessionStorage
 <component type="typeof(App)" param-InitialState="state" render-mode="Server"/>
 *@
-

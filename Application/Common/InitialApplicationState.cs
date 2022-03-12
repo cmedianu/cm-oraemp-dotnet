@@ -3,15 +3,26 @@ using Microsoft.Extensions.Primitives;
 
 namespace OraEmp.Application.Common;
 
+
+/// <summary>
+///  Initial application state set from HTTP context in _Host.cshtml
+/// </summary>
 public class InitialApplicationState
 {
+    public InitialApplicationState(string username, string remoteIpAddress, string localPort, string remotePort, string userAgent)
+    {
+        Username = username;
+        RemoteIpAddress = remoteIpAddress;
+        LocalPort = localPort;
+        RemotePort = remotePort;
+        UserAgent = userAgent;
+    }
 
-    public string Username { get; set; } = "NOBODY";
-    public string RemoteIpAddress { get; set; }
-    public string LocalPort { get; set; }
-    public string RemotePort { get; set; }
-    public string Test { get; set; }
-    public string UserAgent { get; set; }
+    public string Username { get; init; } = "NOBODY";
+    public string RemoteIpAddress { get; init; }
+    public string LocalPort { get; init; }
+    public string RemotePort { get; init; }
+    public string UserAgent { get; init; }
 
     public override string ToString()
     {
