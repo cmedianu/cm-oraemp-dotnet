@@ -8,10 +8,12 @@ public class ApplicationState
     {
         Username = init.Username;
         RemoteIpAddress = init.RemoteIpAddress;
+        SessionId = init.SessionId;
     }
 
     public string Username { get; }
     public string RemoteIpAddress { get; }
+    public string SessionId { get; set; }
 
 
     public override string ToString()

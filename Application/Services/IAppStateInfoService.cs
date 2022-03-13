@@ -2,7 +2,7 @@ using OraEmp.Application.Common;
 
 namespace OraEmp.Application.Services;
 
-public interface IAppStateInfo
+public interface IAppStateInfoService
 {
     ApplicationState? State { get; }
     void SetState(InitialApplicationState initial);

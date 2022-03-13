@@ -3,7 +3,7 @@ using Serilog;
 
 namespace OraEmp.Application.Services;
 
-public class AppStateInfo : IAppStateInfo
+public class AppStateInfoService : IAppStateInfoService
 {
     public ApplicationState? State { get; private set; }
 

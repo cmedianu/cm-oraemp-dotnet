@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using OraEmp.Application.Common;
+using OraEmp.Application.Services;
 using OraEmp.Infrastructure.Persistence;
 
 namespace OraEmp.WebUI.Areas.Identity.Pages.Account;
@@ -36,17 +38,15 @@ public class LoginModel : PageModel
     public  async Task<IActionResult> OnPostAsync()
     {
         var loginName = Input.LoginName.ToLower();
-        var newSessionId =  _dbSessionManagement.GetNewSessionId(loginName);
         var roles =  _dbSessionManagement.GetRolesForUser(loginName);
 
         if (ModelState.IsValid)
         {
             var claims = new List<Claim>();
-
-            claims.Add(new Claim("SessionId",newSessionId));
             claims.Add(new Claim(ClaimTypes.Name,loginName));
             claims.Add(new Claim(ClaimTypes.NameIdentifier,loginName));
             claims.Add(new Claim("city","Vancouver"));
+            claims.Add(new Claim(IConstants.Ip, HttpContext.Connection.RemoteIpAddress.ToString()));
             foreach (string role in roles)
             {
                 claims.Add(new Claim(ClaimTypes.Role,role));

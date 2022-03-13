@@ -23,6 +23,7 @@ public class InitialApplicationState
     public string LocalPort { get; init; }
     public string RemotePort { get; init; }
     public string UserAgent { get; init; }
+    public string? SessionId { get; set; }
 
     public override string ToString()
     {

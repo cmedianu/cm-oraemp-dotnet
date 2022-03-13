@@ -5,21 +5,10 @@ using Serilog;
 
 namespace OraEmp.Infrastructure.Persistence;
 
-public class DbSessionManagement : IDbSessionManagement
+public class DbSessionManagement : DbServiceBase, IDbSessionManagement
 {
-    public DbSessionManagement(string connectionString)
+    public DbSessionManagement(string connectionString) : base(connectionString)
     {
-        this.connectionString = connectionString;
-    }
-
-    private string connectionString { get; set; }
-
-    private OracleConnection GetConnection()
-    {
-        var conn = new OracleConnection(connectionString);
-        conn.Open();
-        conn.ModuleName = this.GetType().Name;
-        return conn;
     }
 
     public string GetNewSessionId(string userName)

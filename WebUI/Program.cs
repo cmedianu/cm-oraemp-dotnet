@@ -58,6 +58,8 @@ builder.Services.AddScoped<IDbSessionManagement>(s => new DbSessionManagement(co
 
 builder.Services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
 
+builder.Services.AddScoped<IAppStateInfoService, AppStateInfoService>();
+
 builder.Services.AddAuthorization(options =>
     {
         options.AddPolicy("CoolCitiesOnly", policy => policy.RequireClaim("city", "Brasov"));
@@ -95,7 +97,7 @@ IMapper mapper = mapperConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
 builder.Services.AddSingleton(mapperConfig);
 
-builder.Services.AddScoped<AppStateInfo>();
+builder.Services.AddScoped<AppStateInfoService>();
 
 /// END SERVICES
 
