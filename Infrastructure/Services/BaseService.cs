@@ -1,4 +1,4 @@
-using Hides.Domain.Abstractions.Repositories;
+using OraEmp.Application.Abstractions;
 using OraEmp.Infrastructure.Persistence;
 using Serilog;
 
@@ -11,75 +11,78 @@ using Microsoft.EntityFrameworkCore;
 
 public abstract class BaseService<TEntity> : IBaseService<TEntity> where TEntity : class
 {
-    protected readonly IDataContext _context;
+    private readonly IDbContextFactory<DataContext> _ctxFactory;
+    private readonly ILogger _logger;
 
-    public BaseService(IDbContextFactory<DataContext> ctx)
+    public BaseService(IDbContextFactory<DataContext> ctx, ILogger logger)
     {
-        //Need to resolve the authentication state provider here..
-        _context = (IDataContext) ctx.CreateDbContext();
-    }
-
-    public void Dispose()
-    {
-        //_contextFactory.Dispose();
-        _context.Dispose();
+        _ctxFactory = ctx;
+        _logger = logger?.ForContext<DbSessionManagement>() ?? throw new ArgumentNullException(nameof(logger));
     }
 
     // public abstract Task<TEntity> GetByIdAsync(decimal id);
     public async Task<TEntity> GetByIdAsync(decimal id, bool track = true)
     {
-        TEntity ret = await _context.Instance.FindAsync<TEntity>(id) ?? throw new InvalidOperationException("Could not find object by ID");
+        using DataContext context = _ctxFactory.CreateDbContext();
+        TEntity ret = await context.Instance.FindAsync<TEntity>(id) ?? throw new InvalidOperationException("Could not find object by ID");
         if (!track)
         {
-            _context.Instance.Entry(ret).State = EntityState.Detached;
+            context.Instance.Entry(ret).State = EntityState.Detached;
         }
         return ret;
     }
 
     public async Task<List<TEntity>> GetAllAsync()
     {
-        return await _context.Instance.Set<TEntity>().ToListAsync();
+        using DataContext context = _ctxFactory.CreateDbContext();
+        return await context.Instance.Set<TEntity>().ToListAsync();
     }
 
     public async Task UpdateAsync(TEntity obj)
     {
-        _context.Instance.Update(obj);
-        await _context.Instance.SaveChangesAsync();
+        using DataContext context = _ctxFactory.CreateDbContext();
+        context.Instance.Update(obj);
+        await context.Instance.SaveChangesAsync();
     }
 
     public void UpdateNoSave(TEntity obj)
     {
-        _context.Instance.Update(obj);
+        using DataContext context = _ctxFactory.CreateDbContext();
+        context.Instance.Update(obj);
     }
 
     public async Task SaveChangesAsync()
     {
-        await _context.Instance.SaveChangesAsync();
+        using DataContext context = _ctxFactory.CreateDbContext();
+        await context.Instance.SaveChangesAsync();
     }
 
     public async Task InsertAsync(TEntity obj)
     {
-        _context.Instance.Add(obj);
-        await _context.Instance.SaveChangesAsync();
+        using DataContext context = _ctxFactory.CreateDbContext();
+        context.Instance.Add(obj);
+        await context.Instance.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(TEntity obj)
     {
-        _context.Instance.Remove(obj);
-        await _context.Instance.SaveChangesAsync();
+        using DataContext context = _ctxFactory.CreateDbContext();
+        context.Instance.Remove(obj);
+        await context.Instance.SaveChangesAsync();
     }
 
     public async Task DeleteListAsync(List<TEntity> dbObjList)
     {
-        foreach (var entityEntry in _context.Instance.ChangeTracker.Entries())
+        using DataContext context = _ctxFactory.CreateDbContext();
+        foreach (var entityEntry in context.Instance.ChangeTracker.Entries())
         {
             entityEntry.State = EntityState.Detached;
-            Log.Information(entityEntry.ToString());
+            _logger.Debug("Deleted Entity {entity}" ,entityEntry.ToString());
         }
 
         foreach (TEntity entity in dbObjList)
         {
-            var entityEntry = _context.Instance.Entry(entity);
+            var entityEntry = context.Instance.Entry(entity);
             if (entityEntry.IsKeySet)
             {
                 entityEntry.State = EntityState.Deleted;
@@ -90,20 +93,21 @@ public abstract class BaseService<TEntity> : IBaseService<TEntity> where TEntity
             }
         }
 
-        await _context.Instance.SaveChangesAsync();
+        await context.Instance.SaveChangesAsync();
     }
 
     public async Task UpsertListAsync(List<TEntity> dbObjList)
     {
-        foreach (var entityEntry in _context.Instance.ChangeTracker.Entries())
+        using DataContext context = _ctxFactory.CreateDbContext();
+        foreach (var entityEntry in context.Instance.ChangeTracker.Entries())
         {
             entityEntry.State = EntityState.Detached;
-            Log.Information(entityEntry.ToString());
+            _logger.Debug("Upserted Entity {entity}" ,entityEntry.ToString());
         }
 
         foreach (TEntity entity in dbObjList)
         {
-            var entityEntry = _context.Instance.Entry(entity);
+            var entityEntry = context.Instance.Entry(entity);
             if (entityEntry.IsKeySet)
             {
                 entityEntry.State = EntityState.Modified;
@@ -111,12 +115,12 @@ public abstract class BaseService<TEntity> : IBaseService<TEntity> where TEntity
             else
             {
                 entityEntry.State = EntityState.Added;
-                await _context.Instance.SaveChangesAsync();
+                await context.Instance.SaveChangesAsync();
             }
 
             entityEntry.CurrentValues.SetValues(entity);
         }
 
-        await _context.Instance.SaveChangesAsync();
+        await context.Instance.SaveChangesAsync();
     }
 }

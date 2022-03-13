@@ -1,9 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Oracle.ManagedDataAccess.Client;
 using OraEmp.Application.Services;
 using OraEmp.Infrastructure.Persistence;
+using Serilog;
+using ILogger = Serilog.ILogger;
 
 namespace Infrastructure.UnitTests;
 
@@ -16,6 +19,7 @@ public class Startup
         var builder = new ConfigurationBuilder().AddUserSecrets<Startup>()
             .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName)
             .AddJsonFile("appsettings.json", false);
+
         Configuration = builder.Build();
         var connectionStringName = Configuration.GetConnectionString("Default");
         var connectionString = Configuration.GetConnectionString(connectionStringName) ?? throw new ArgumentNullException("Configuration.GetConnectionString(connectionStringName)");
@@ -39,8 +43,9 @@ public class Startup
         });
         // OracleConfiguration.OracleDataSources.Add(connectionStringName, connectionString);
 
-        services.AddScoped<IDbSessionManagement>(s => new DbSessionManagement(connectionString));
+        services.AddScoped<IDbSessionManagement>(s => new DbSessionManagement(connectionString,s.GetRequiredService<ILogger>().ForContext<DbSessionManagement>()));
         OracleConfiguration.BindByName = true;
+
 
         // Set tracing options
         OracleConfiguration.TraceOption = 1;
@@ -48,5 +53,11 @@ public class Startup
         // Uncomment below to generate trace files
         //OracleConfiguration.TraceLevel = 7;
 
+
+        var seriLog = new LoggerConfiguration()
+            .ReadFrom.Configuration(Configuration)
+            .CreateLogger();
+
+        services.AddSingleton<ILogger>(seriLog);
     }
 }

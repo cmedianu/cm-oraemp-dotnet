@@ -15,7 +15,7 @@ public class DepartmentValidator :
     {
         RuleFor(x => x.DepartmentName)
             .NotEmpty().WithMessage("Please enter a name")
-            .MaximumLength(4).WithMessage("Max 4 chars");
-
+            .MaximumLength(30).WithMessage("Maximum length is 30")
+            .MinimumLength(2).WithMessage("Minimum Legth is 2");
     }
 }

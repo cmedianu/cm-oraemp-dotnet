@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Hides.Infrastructure.Persistence.Util
+﻿namespace OraEmp.Infrastructure.Services
 {
     public class ConfigOptions
     {

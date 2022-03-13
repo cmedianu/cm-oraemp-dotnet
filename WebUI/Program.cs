@@ -14,6 +14,7 @@ using OraEmp.Application.Services;
 using OraEmp.Infrastructure.Persistence;
 using Serilog;
 using Serilog.Events;
+using ILogger = Serilog.ILogger;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog((context, loggerConfiguration) =>
@@ -54,7 +55,7 @@ if (string.IsNullOrEmpty(connectionString))
     throw new Exception(
         $"The \"Default\" Datasource could not be found in your secrets file. Look in appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json and in %APPDATA%\\Microsoft\\UserSecrets\\");
 
-builder.Services.AddScoped<IDbSessionManagement>(s => new DbSessionManagement(connectionString));
+builder.Services.AddScoped<IDbSessionManagement>(s => new DbSessionManagement(connectionString,s.GetRequiredService<ILogger>()));
 
 builder.Services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
 
@@ -116,7 +117,7 @@ app.UseSerilogRequestLogging(opts
     => opts.EnrichDiagnosticContext = (diagnosticsContext, httpContext) =>
     {
         var request = httpContext.Request;
-        diagnosticsContext.Set("Custom Header value", request.Headers["custom-header-value"]);
+        diagnosticsContext.Set("User-Agent", request.Headers["User-Agent"]);
     });
 
 

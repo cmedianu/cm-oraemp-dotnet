@@ -24,7 +24,7 @@ public class TestDbSessionManagement
     {
         var username = "john";
         var roles = _svc.GetRolesForUser(username);
-        Assert.Equal(roles.Length,2);
-        Assert.Equal(roles[0],username);
+        Assert.Equal(2,roles.Length);
+        Assert.Equal(username,roles[0]);
     }
 }

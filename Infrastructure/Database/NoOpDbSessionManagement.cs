@@ -1,14 +1,17 @@
 using System.Data;
-using System.Data.Common;
 using Oracle.ManagedDataAccess.Client;
-using Serilog;
+using ILogger = Serilog.ILogger;
+
 
 namespace OraEmp.Infrastructure.Persistence;
 
 public class DbSessionManagement : DbServiceBase, IDbSessionManagement
 {
-    public DbSessionManagement(string connectionString) : base(connectionString)
+    private readonly ILogger _logger;
+
+    public DbSessionManagement(string connectionString, ILogger logger) : base(connectionString)
     {
+        _logger = logger?.ForContext<DbSessionManagement>() ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public string GetNewSessionId(string userName)
@@ -17,9 +20,9 @@ public class DbSessionManagement : DbServiceBase, IDbSessionManagement
         {
             OracleCommand cmd = connection.CreateCommand();
             cmd.CommandText = "select dbms_random.string('U', 20) str from dual";
-            string ret = cmd.ExecuteScalar() as string;
-            Log.Debug("new session: {}", ret);
-            return ret;
+            string sessionId = cmd.ExecuteScalar() as string;
+            _logger.Debug("new session: {sessionId}", sessionId);
+            return sessionId;
         }
     }
 
@@ -33,6 +36,7 @@ public class DbSessionManagement : DbServiceBase, IDbSessionManagement
             cmd.Parameters.Add(":USER_NAME", OracleDbType.Varchar2, userName, ParameterDirection.Input);
             string ret = cmd.ExecuteScalar() as string;
             var roles = ret.Split(",");
+            _logger.Debug("ROLES: {roles}",roles);
             return roles;
         }
     }
@@ -54,7 +58,7 @@ public class DbSessionManagement : DbServiceBase, IDbSessionManagement
         using (OracleConnection connection = GetConnection())
         {
             OracleCommand cmd = connection.CreateCommand();
-            cmd.CommandText = "select :OLDSESSION RESTART from dual";
+            cmd.CommandText = "select :OLDSESSION CLOSE from dual";
             cmd.CommandType = CommandType.Text;
             cmd.Parameters.Add(":OLDSESSION", OracleDbType.Varchar2, userName, ParameterDirection.Input);
             string ret = cmd.ExecuteScalar() as string;
