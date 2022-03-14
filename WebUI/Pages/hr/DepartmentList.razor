@@ -1,0 +1,58 @@
+@attribute [Authorize]
+
+@page "/department/list"
+@using OraEmp.Domain.Entities
+@using BlazorTable
+@using global::Application.Common
+@using OraEmp.Application.Services
+@using OraEmp.WebUI.Util
+@inject NavigationManager _navigation;
+@inject IJSRuntime _js
+@inject IDepartmentService _svc
+
+<h3>Department List</h3>
+@if (_objectList == null)
+{
+    <p>
+        <em>Loading...</em>
+    </p>
+}
+else
+{
+    <Table class="mb-3" TableItem="Department" Items="_objectList" PageSize="50" ColumnReorder="true">
+        <Column TableItem="Department" Title="Name&nbsp;#" Field="@(x => x.DepartmentName)" Sortable="true" Filterable="true">
+            <Template>
+                <button class="btn btn-link" @onclick="() => GoDepartment(context)">@context.DepartmentName</button>
+            </Template>
+        </Column>
+        <Pager ShowPageNumber="true" ShowTotalCount="true" ShowPageSizes="true" AlwaysShow="false"/>
+    </Table>
+}
+
+@code
+{
+    private bool _dataLoading;
+    private List<Department>? _objectList;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (_dataLoading)
+        {
+            return;
+        }
+        try
+        {
+            _dataLoading = true;
+            _objectList = await _svc.GetAllAsync();
+        }
+        finally
+        {
+            _dataLoading = false;
+        }
+    }
+
+    private void GoDepartment(Department context)
+    {
+        _navigation.NavigateTo(INav.DepartmentEdit(context.DepartmentId.ToString()));
+    }
+}

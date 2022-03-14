@@ -1,8 +1,25 @@
 ﻿@page "/"
+@using OraEmp.Application.Common
+@using Serilog
 @namespace OraEmp.WebUI.Pages
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@* This code gets executed only when we have a request, so we can capctreu the http context here *@
 @{
     Layout = "_Layout";
+    var state = new InitialApplicationState
+        (
+        username: HttpContext.User.Identity.Name,
+        remoteIpAddress: HttpContext.Connection.RemoteIpAddress.ToString(),
+        localPort: HttpContext.Connection.LocalPort.ToString(),
+        remotePort: HttpContext.Connection.RemotePort.ToString(),
+        userAgent: HttpContext.Request.Headers.UserAgent.ToString()
+        );
+    HttpContext.Request.Headers.TryGetValue("UserAgent", out var ret);
 }
 
-<component type="typeof(App)" render-mode="ServerPrerendered"/>
+<component type="typeof(App)" param-InitialState="state" render-mode="ServerPrerendered"/>
+
+@*
+Needed for SessionStorage
+<component type="typeof(App)" param-InitialState="state" render-mode="Server"/>
+*@

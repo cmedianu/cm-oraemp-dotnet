@@ -1,19 +1,49 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager _navigationManager
 
-<PageTitle>WebUI</PageTitle>
+<PageTitle>Human Resources</PageTitle>
+<AuthorizeView>
+    <Authorized>
+        <div class="page">
+            <div class="sidebar">
+                <NavMenu/>
+            </div>
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu/>
-    </div>
+            <main>
+                <div class="top-row px-4">
+                    <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+                    @if (context.User.Identity.IsAuthenticated)
+                    {
+                        <a href="/Identity/Account/Logout?returnUrl=@Uri.EscapeDataString(_navigationManager.ToBaseRelativePath(_navigationManager.Uri))">Logout</a>
+                    }
+                    else
+                    {
+                        <a href="/Identity/Account/Login?returnUrl=@Uri.EscapeDataString(_navigationManager.ToBaseRelativePath(_navigationManager.Uri))">Login</a>
+                    }
+                </div>
+                <article class="content px-4">
+                    @Body
+                </article>
+            </main>
         </div>
+    </Authorized>
+    <NotAuthorized>
+        @Body
+    </NotAuthorized>
+</AuthorizeView>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+@code{
+    [CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await AuthStat).User;
+     
+        if(!user.Identity.IsAuthenticated)
+        {
+            var returnUrl = Uri.EscapeDataString(_navigationManager.ToBaseRelativePath(_navigationManager.Uri));
+            _navigationManager.NavigateTo($"Identity/Account/Login?returnUrl={returnUrl}");
+        }
+    }
+}
