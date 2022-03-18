@@ -1,0 +1,21 @@
+- Blazor
+    - new web architecture, realtime (SignalR)
+    - razor
+- Projects structure
+    - application
+        - projects
+- Startup
+    - DI / scopes
+- tests
+    - xunit
+    - DI
+    - coverage
+- persistence, services, session, security roles
+- Cross cutting concerns
+    - validation
+    - logging
+        - structured, enrichment, pluggable 
+    - mapper
+- async
+- Docker
+- Splunk
