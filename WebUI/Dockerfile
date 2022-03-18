@@ -19,5 +19,6 @@ FROM base AS final
 EXPOSE 7100
 WORKDIR /app
 ENV ASPNETCORE_ENVIRONMENT=Docker
+ENV ASPNETCORE_URLS=http://+:7100
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "WebUI.dll"]

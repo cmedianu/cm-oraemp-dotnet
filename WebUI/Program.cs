@@ -15,6 +15,12 @@ using Serilog;
 using Serilog.Events;
 using ILogger = Serilog.ILogger;
 
+/*Log.Logger = new LoggerConfiguration()
+//    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .CreateLogger();*/
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseSerilog((context, loggerConfiguration) =>
@@ -81,6 +87,7 @@ else
 if (string.IsNullOrEmpty(connectionString))
     throw new Exception(
         $"The \"Default\" Datasource could not be found in your secrets file. Look in appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json and in %APPDATA%\\Microsoft\\UserSecrets\\");
+// End Connection String
 
 builder.Services.AddScoped<IDbSessionManagement>(s =>
     new DbSessionManagement(connectionString, s.GetRequiredService<ILogger>()));
@@ -123,9 +130,6 @@ MapperConfiguration mapperConfig = new(cfg => { cfg.AddProfile<WebFormToDomainMa
 var mapper = mapperConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
 builder.Services.AddSingleton(mapperConfig);
-
-// Captures initial user info, holds DB session ID
-builder.Services.AddScoped<AppStateInfoService>();
 
 /// END SERVICES
 
