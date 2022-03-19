@@ -1,7 +1,7 @@
 # OraEmp
 A Blazor Server Project based on the Oracle HR (Emp Dept) schema. I wrote it to help me understand and experiment with concepts described in C# and Blazor Youtube videos
 
-The [Code Wrinkles](https://www.youtube.com/c/Codewrinkles) and [Nick Chapsas](https://www.youtube.com/c/Elfocrash) have been very informative to me.
+The [Code Wrinkles](https://www.youtube.com/c/Codewrinkles) and [Nick Chapsas](https://www.youtube.com/c/Elfocrash) channels have been very informative to me.
 
 ### Development Notes:
 
