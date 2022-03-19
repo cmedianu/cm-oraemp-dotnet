@@ -4,9 +4,13 @@
         <TargetFramework>net6.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>OraEmp_WebUI</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Serilog.AspNetCore" Version="5.0.0" />
+        <PackageReference Include="Serilog.Enrichers.Environment" Version="2.2.0" />
+        <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     </ItemGroup>
 

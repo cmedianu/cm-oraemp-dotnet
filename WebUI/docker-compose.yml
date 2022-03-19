@@ -1,0 +1,10 @@
+services:
+  web:
+    build: .
+    ports:
+      - "7101:7100"
+    volumes:
+      - C:/Users/calin/AppData/Roaming/Microsoft/UserSecrets/dockerSecrets/:/app/secrets:ro
+    environment:
+      ASPNETCORE_ENVIRONMENT: Docker
+    entrypoint: [ "dotnet", "WebUI.dll" ]
