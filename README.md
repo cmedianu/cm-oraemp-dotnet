@@ -19,4 +19,4 @@ The [Code Wrinkles](https://www.youtube.com/c/Codewrinkles) and [Nick Chapsas](h
 ### TODO
 - Smarter error handling, maybe use ```<ErrorBoundary>```
 - Integrate logging with my Elasticsearch or Splunk servers
-
+- Experiment with REST API.
