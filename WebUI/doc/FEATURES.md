@@ -17,5 +17,6 @@
         - structured, enrichment, pluggable 
     - mapper
 - async
+- %APPDATA%\Microsoft\UserSecrets\
 - Docker
 - Splunk
