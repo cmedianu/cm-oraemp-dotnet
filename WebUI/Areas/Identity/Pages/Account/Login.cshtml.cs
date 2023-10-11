@@ -16,7 +16,7 @@ public class LoginModel : PageModel
     private readonly SignInManager<IdentityUser> _signInManager;
     private IDbSessionManagement _dbSessionManagement;
 
-    [BindProperty] public InputModel Input { get; set; }
+    [BindProperty] public InputModel Input { get; set; } = new InputModel();
 
     [FromQuery(Name = "returnUrl")]
     public string? returnUrl { get; set; }
@@ -27,7 +27,7 @@ public class LoginModel : PageModel
     }
     public class InputModel
     {
-        [Required]
+        [Required(ErrorMessage = "Login name is required.")]
         public string LoginName { get; set; }
 
         /*[Required]
@@ -37,11 +37,12 @@ public class LoginModel : PageModel
 
     public  async Task<IActionResult> OnPostAsync()
     {
-        var loginName = Input.LoginName.ToLower();
-        var roles =  _dbSessionManagement.GetRolesForUser(loginName);
-
+        
         if (ModelState.IsValid)
         {
+            var loginName = Input.LoginName.ToLower();
+            var roles =  _dbSessionManagement.GetRolesForUser(loginName);
+            
             var claims = new List<Claim>();
             claims.Add(new Claim(ClaimTypes.Name,loginName));
             claims.Add(new Claim(ClaimTypes.NameIdentifier,loginName));
@@ -51,7 +52,6 @@ public class LoginModel : PageModel
             {
                 claims.Add(new Claim(ClaimTypes.Role,role));
             }
-
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
